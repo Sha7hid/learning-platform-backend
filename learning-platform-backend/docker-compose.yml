@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:6
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  auth-service:
+    build: ./services/auth-service
+    image: learning-platform/auth-service
+    restart: unless-stopped
+    environment:
+      - PORT=3001
+      - MONGO_URI=mongodb://mongo:27017/authdb
+      - JWT_SECRET=${JWT_SECRET:-changeme}
+    depends_on:
+      - mongo
+    ports:
+      - "3001:3001"
+
+  course-service:
+    build: ./services/course-service
+    image: learning-platform/course-service
+    restart: unless-stopped
+    environment:
+      - PORT=3002
+      - MONGO_URI=mongodb://mongo:27017/coursedb
+      - JWT_SECRET=${JWT_SECRET:-changeme}
+    depends_on:
+      - mongo
+    ports:
+      - "3002:3002"
+
+  api-gateway:
+    build: ./services/api-gateway
+    image: learning-platform/api-gateway
+    restart: unless-stopped
+    environment:
+      - PORT=3000
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - COURSE_SERVICE_URL=http://course-service:3002
+    depends_on:
+      - auth-service
+      - course-service
+    ports:
+      - "3000:3000"
+
+volumes:
+  mongo_data:
+
+

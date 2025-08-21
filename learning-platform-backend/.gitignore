@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Build outputs
+dist/
+build/
+.cache/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Editors/IDE
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Misc
+.eslintcache
+.tmp/
+tmp/
+.direnv/
+.envrc
+docker-compose.override.yml
+
+
