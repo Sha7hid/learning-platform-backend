@@ -74,6 +74,17 @@ router.delete('/:id', authenticateJwt, requireRoles('admin'), async (req, res) =
   res.json({ message: 'Deleted' });
 });
 
+// Enroll in a course (student only)
+router.post('/:id/enroll', authenticateJwt, requireRoles('student'), async (req, res) => {
+  const course = await Course.findById(req.params.id);
+  if (!course) return res.status(404).json({ message: 'Not found' });
+  if (!course.isPublished) return res.status(400).json({ message: 'Course is not open for enrollment' });
+  const studentId = String(req.user.id);
+  course.enrolledStudentIds = Array.from(new Set([...(course.enrolledStudentIds || []), studentId]));
+  await course.save();
+  res.status(200).json({ message: 'Enrolled', courseId: course._id, studentId });
+});
+
 module.exports = router;
 
 

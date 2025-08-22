@@ -86,6 +86,9 @@ Auth
 - GET `/auth/me`
   - Headers: `Authorization: Bearer <token>`
   - 200: `{ user }`
+ - GET `/auth/users` (admin)
+   - Headers: `Authorization: Bearer <token>`
+   - 200: `{ users: [{ id, name, email, role, createdAt, updatedAt }] }`
 
 Categories
 - GET `/categories`
@@ -106,6 +109,11 @@ Courses
   - Body: `{ title, description?, categoryId, isPublished? }`
 - POST `/courses/:id/assign-faculty` (institute)
   - Body: `{ facultyIds: ["<facultyUserId>", ...] }`
+- POST `/courses/:id/enroll` (student)
+  - Headers: `Authorization: Bearer <token>`
+  - 200: `{ message: "Enrolled", courseId, studentId }`
+  - 400: `{ message: "Course is not open for enrollment" }`
+  - 404: `{ message: "Not found" }`
 - PUT `/courses/:id` (admin, owning institute)
 - DELETE `/courses/:id` (admin)
 

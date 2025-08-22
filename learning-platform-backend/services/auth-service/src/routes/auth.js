@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { authenticateJwt } = require('../middleware/auth');
+const { requireRoles } = require('../middleware/roles');
 
 const router = express.Router();
 
@@ -61,6 +62,12 @@ router.get('/me', authenticateJwt, async (req, res) => {
   const user = await User.findById(req.user.id).select('name email role');
   if (!user) return res.status(404).json({ message: 'User not found' });
   res.json({ user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+});
+
+// Admin-only: list all users (excluding sensitive fields)
+router.get('/users', authenticateJwt, requireRoles('admin'), async (req, res) => {
+  const users = await User.find().select('name email role createdAt updatedAt');
+  res.json({ users: users.map(u => ({ id: u._id, name: u.name, email: u.email, role: u.role, createdAt: u.createdAt, updatedAt: u.updatedAt })) });
 });
 
 module.exports = router;
